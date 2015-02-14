@@ -5,16 +5,25 @@ set -o pipefail  # trace ERR through pipes
 set -o errtrace  # trace ERR through 'time command' and other functions
 set -o errexit   # exit the script if any statement returns a non-true return value
 
+function cleanup {
+    echo "Cleaning up..."
+    if [ -z ${TMPDIR+x} ]; then; else;
+        rm -rf $TMPDIR
+        unset TMPDIR
+    fi
+}
+
 function error {
-  local parent_lineno="$1"
-  local message="$2"
-  local code="${3:-1}"
-  if [[ -n "$message" ]] ; then
-    echo "Error on or near line ${parent_lineno}: ${message}; exiting with status ${code}"
-  else
-    echo "Error on or near line ${parent_lineno}; exiting with status ${code}"
-  fi
-  exit "${code}"
+    local parent_lineno="$1"
+    local message="$2"
+    local code="${3:-1}"
+    if [[ -n "$message" ]] ; then
+        echo "Error on or near line ${parent_lineno}: ${message}; exiting with status ${code}"
+    else
+        echo "Error on or near line ${parent_lineno}; exiting with status ${code}"
+    fi
+    cleanup
+    exit "${code}"
 }
 trap 'error ${LINENO}' ERR
 
@@ -107,15 +116,16 @@ function pull {
     banner
     get_confirmation 'pull'
     load_configs
-    echo pulling
-    touch /bin/yo
+
+    cleanup
 }
 
 function push {
     banner
     get_confirmation 'push'
     load_configs
-    echo pushing
+
+    cleanup
 }
 
 
