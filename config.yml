@@ -9,8 +9,8 @@ remote:
     url: 'some.remoteurl.com'
     port: 27017
   access:
-  	username: 'mongo_user'
-  	password: 'mongo_pass'
+  	username: 'remote_mongo_user'
+  	password: 'remote_mongo_pass'
 
 # For now :local only accepts DB name
 # Assumes DB is at localhost:27017
