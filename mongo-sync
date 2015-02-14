@@ -112,7 +112,7 @@ function banner {
 }
 
 function success_msg {
-    echo "Success\!"
+    echo "Success\!\n"
 }
 
 function done_msg {
@@ -125,7 +125,7 @@ function pull {
     get_confirmation 'pull'
     load_configs
 
-    echo -n "Dumping Remote DB to $TMPDIR... "
+    echo "Dumping Remote DB to $TMPDIR... "
     mongodump \
         -h "$remote_host_url":"$remote_host_port" \
         -d "$remote_db" \
@@ -134,7 +134,7 @@ function pull {
         -o "$TMPDIR" > /dev/null
     success_msg
 
-    echo -n "Overwriting Local DB... "
+    echo "Overwriting Local DB... "
     mongorestore -d "$local_db" "$TMPDIR"/"$remote_db" --drop > /dev/null
     success_msg
 
@@ -146,9 +146,22 @@ function push {
     banner
     get_confirmation 'push'
     load_configs
+    
+    echo "Dumping Local DB to $TMPDIR... "
+    mongodump -d "$local_db" -o "$TMPDIR" > /dev/null
+    success_msg
 
+    echo "Overwriting Remote DB with Dump... "
+    mongorestore \
+        -h "$remote_host_url":"$remote_host_port" \
+        -d "$remote_db" \
+        -u "$remote_access_username" \
+        -p "$remote_access_password" \
+        "$TMPDIR"/"$remote_db" --drop > /dev/null
+    success_msg
 
     cleanup
+    done_msg
 }
 
 
