@@ -1,5 +1,5 @@
-mongo-sync
-==========
+[mongo-sync](https://github.com/sheharyarn/mongo-sync)
+======================================================
 
 _Sync Remote and Local MongoDB Databases in Bash_
 
