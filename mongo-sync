@@ -7,7 +7,9 @@ set -o errexit   # exit the script if any statement returns a non-true return va
 
 function cleanup {
     echo "Cleaning up..."
-    if [ -z ${TMPDIR+x} ]; then; else;
+    if [ -z ${TMPDIR+x} ] ; then
+        echo -n
+    else
         rm -rf $TMPDIR
         unset TMPDIR
     fi
@@ -84,13 +86,14 @@ function get_confirmation() {
 
 function load_configs {
     local config='config.yml'
-    echo "Parsing '$config' ..."
+    echo "Parsing '$config'..."
 
     DIR=$(get_script_dir)
     local FILE="$DIR/$config"
 
     if [ -f $FILE ]; then
        eval $(parse_yaml $FILE)
+       success_msg
     else
        config_not_found $config
     fi
@@ -112,11 +115,14 @@ function banner {
 }
 
 function success_msg {
-    echo "Success\!\n"
+    echo "Success!"
+    echo 
 }
 
 function done_msg {
-    echo "\nDone\!\n"
+    echo 
+    echo "Done!"
+    echo 
 }
 
 
