@@ -120,7 +120,6 @@ function success_msg {
 }
 
 function done_msg {
-    echo 
     echo "Done!"
     echo 
 }
