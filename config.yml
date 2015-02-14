@@ -16,4 +16,4 @@ remote:
 # Assumes DB is at localhost:27017
 
 # All of the parameters above are required,
-# without them, the scripts will fail
+# without them, the script will fail

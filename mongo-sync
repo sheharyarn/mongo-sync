@@ -1,12 +1,73 @@
 #!/bin/bash
 
-if [[ $# -eq 0 ]] ; then
-    echo "no arguments provided"
+function usage_error() {
+	echo mongo-sync: "$1"
     echo "usage: mongo-sync push|pull"
-    echo ""
+	echo ""
+    exit
+}
+
+function config_not_found() {
+	echo "mongo-sync: 'config.yml' not found, it needs to be in the same dir"
+	echo ""
+    exit
+}
+
+function parse_yaml {
+   local prefix=$2
+   local s='[[:space:]]*' w='[a-zA-Z0-9_]*' fs=$(echo @|tr @ '\034')
+   sed -ne "s|^\($s\):|\1|" \
+        -e "s|^\($s\)\($w\)$s:$s[\"']\(.*\)[\"']$s\$|\1$fs\2$fs\3|p" \
+        -e "s|^\($s\)\($w\)$s:$s\(.*\)$s\$|\1$fs\2$fs\3|p"  $1 |
+   awk -F$fs '{
+      indent = length($1)/2;
+      vname[indent] = $2;
+      for (i in vname) {if (i > indent) {delete vname[i]}}
+      if (length($3) > 0) {
+         vn=""; for (i=0; i<indent; i++) {vn=(vn)(vname[i])("_")}
+         printf("%s%s%s=\"%s\"\n", "'$prefix'",vn, $2, $3);
+      }
+   }'
+}
+
+function get_script_dir() {
+	pushd . > /dev/null
+	local SCRIPT_PATH="${BASH_SOURCE[0]}"
+
+	if ([ -h "${SCRIPT_PATH}" ]) then
+	  while ([ -h "${SCRIPT_PATH}" ]) do cd `dirname "$SCRIPT_PATH"`; SCRIPT_PATH=`readlink "${SCRIPT_PATH}"`; done
+	fi
+
+	cd `dirname ${SCRIPT_PATH}` > /dev/null
+	local SCRIPT_PATH=`pwd`;
+	popd  > /dev/null
+
+	echo $SCRIPT_PATH
+}
+
+function load_configs() {
+	DIR=$(get_script_dir)
+}
+
+
+function pull() {
+	echo pulling
+}
+
+function push() {
+	echo pushing
+}
+
+# TODO: Add --overwrite, and --config flags
+
+if [[ $# -eq 0 ]] ; then
+    usage_error "no arguments provided"
 else
-    for i in "$@"; do
-        find . -iname "*$i*" -d | sed 's/^..//' | grep -i --color "$i"
-        echo ""
-    done
+    if [[ "$1" == 'push' ]] ; then
+    	push
+    elif [[ "$1" == 'pull' ]] ; then
+    	pull
+    else
+    	usage_error "unrecognized command \"$1\""
+    fi
 fi
