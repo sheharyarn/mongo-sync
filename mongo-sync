@@ -45,16 +45,36 @@ function get_script_dir() {
 	echo $SCRIPT_PATH
 }
 
+function get_confirmation() {
+	read -p "Are you sure you want to $1? Enter 'yes': " mongo_confr
+
+	case $mongo_confr in
+        [yY][Ee][Ss] )  ;;
+        *) echo "Incorrect input, aborting..."; exit;;
+    esac
+}
+
 function load_configs() {
 	DIR=$(get_script_dir)
+	local FILE="$DIR/config.yml"
+
+	if [ -f $FILE ]; then
+	   parse_yaml $FILE
+	else
+	   config_not_found
+	fi
 }
 
 
 function pull() {
+	get_confirmation 'pull'
+	load_configs
 	echo pulling
 }
 
 function push() {
+	get_confirmation 'push'
+	load_configs
 	echo pushing
 }
 
