@@ -22,7 +22,13 @@ _Sync Remote and Local MongoDB Databases in Bash. Works with Heroku too!_
 	./mongo-sync pull		# Pull DB from Remote
 	```
 
-___Note:__ Pushing/Pulling overwrites the target DB_
+***Note:** Pushing/Pulling overwrites the target DB*
+
+
+## To Do
+
+ - Specify `config.yml` by passing it as an argument
+ - More Options for Local DB in `config.yml`
 
 
 ## Contributing
