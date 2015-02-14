@@ -1,7 +1,12 @@
 [mongo-sync](https://github.com/sheharyarn/mongo-sync)
 ======================================================
 
-_Sync Remote and Local MongoDB Databases in Bash. Works with Heroku too!_
+> _Sync Remote and Local MongoDB Databases in Bash. Works with Heroku too!_
+
+
+#### But why?
+
+Fuck you. That's why.
 
 
 ## Usage
@@ -22,7 +27,7 @@ _Sync Remote and Local MongoDB Databases in Bash. Works with Heroku too!_
 	./mongo-sync pull		# Pull DB from Remote
 	```
 
-***Note:** Pushing/Pulling overwrites the target DB*
+**Note:** *Pushing/Pulling overwrites the target DB*
 
 
 ## To Do
