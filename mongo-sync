@@ -1,15 +1,34 @@
 #!/bin/bash
 
-function usage_error() {
-	echo mongo-sync: "$1"
+set -e           # exit on error
+set -o pipefail  # trace ERR through pipes
+set -o errtrace  # trace ERR through 'time command' and other functions
+set -o errexit   # exit the script if any statement returns a non-true return value
+
+function error {
+  local parent_lineno="$1"
+  local message="$2"
+  local code="${3:-1}"
+  if [[ -n "$message" ]] ; then
+    echo "Error on or near line ${parent_lineno}: ${message}; exiting with status ${code}"
+  else
+    echo "Error on or near line ${parent_lineno}; exiting with status ${code}"
+  fi
+  exit "${code}"
+}
+trap 'error ${LINENO}' ERR
+
+function usage_error {
+    echo mongo-sync: "$1"
     echo "usage: mongo-sync push|pull"
-	echo ""
+    echo ""
     exit
 }
 
-function config_not_found() {
-	echo "mongo-sync: 'config.yml' not found, it needs to be in the same dir"
-	echo ""
+function config_not_found {
+    echo "failed: '$1' not found, it needs to be in the same dir"
+    echo "aborting..."
+    echo ""
     exit
 }
 
@@ -30,64 +49,89 @@ function parse_yaml {
    }'
 }
 
-function get_script_dir() {
-	pushd . > /dev/null
-	local SCRIPT_PATH="${BASH_SOURCE[0]}"
+function get_script_dir {
+    pushd . > /dev/null
+    local SCRIPT_PATH="${BASH_SOURCE[0]}"
 
-	if ([ -h "${SCRIPT_PATH}" ]) then
-	  while ([ -h "${SCRIPT_PATH}" ]) do cd `dirname "$SCRIPT_PATH"`; SCRIPT_PATH=`readlink "${SCRIPT_PATH}"`; done
-	fi
+    if ([ -h "${SCRIPT_PATH}" ]) then
+      while ([ -h "${SCRIPT_PATH}" ]) do cd `dirname "$SCRIPT_PATH"`; SCRIPT_PATH=`readlink "${SCRIPT_PATH}"`; done
+    fi
 
-	cd `dirname ${SCRIPT_PATH}` > /dev/null
-	local SCRIPT_PATH=`pwd`;
-	popd  > /dev/null
+    cd `dirname ${SCRIPT_PATH}` > /dev/null
+    local SCRIPT_PATH=`pwd`;
+    popd  > /dev/null
 
-	echo $SCRIPT_PATH
+    echo $SCRIPT_PATH
 }
 
 function get_confirmation() {
-	read -p "Are you sure you want to $1? Enter 'yes': " mongo_confr
+    read -p "Are you sure you want to $1? Enter 'yes': " mongo_confr
 
-	case $mongo_confr in
+    case $mongo_confr in
         [yY][Ee][Ss] )  ;;
         *) echo "Incorrect input, aborting..."; exit;;
     esac
 }
 
-function load_configs() {
-	DIR=$(get_script_dir)
-	local FILE="$DIR/config.yml"
+function load_configs {
+    local config='config.yml'
+    echo "Parsing '$config' ..."
 
-	if [ -f $FILE ]; then
-	   parse_yaml $FILE
-	else
-	   config_not_found
-	fi
+    DIR=$(get_script_dir)
+    local FILE="$DIR/$config"
+
+    if [ -f $FILE ]; then
+       eval $(parse_yaml $FILE)
+    else
+       config_not_found $config
+    fi
+
+    # Loads:
+    # - $local_db
+    # - $remote_db
+    # - $remote_host_url
+    # - $remote_host_port
+    # - $remote_access_username
+    # - $remote_access_password
+
+    TMPDIR=/tmp/"$local_db"/dump
+}
+
+function banner {
+    echo mongo-sync:
+    echo -----------
 }
 
 
-function pull() {
-	get_confirmation 'pull'
-	load_configs
-	echo pulling
+function pull {
+    banner
+    get_confirmation 'pull'
+    load_configs
+    echo pulling
+    touch /bin/yo
 }
 
-function push() {
-	get_confirmation 'push'
-	load_configs
-	echo pushing
+function push {
+    banner
+    get_confirmation 'push'
+    load_configs
+    echo pushing
 }
 
-# TODO: Add --overwrite, and --config flags
+
+## MAIN
+## ====
+
+# TODO: Add --overwrite and --config flags
 
 if [[ $# -eq 0 ]] ; then
     usage_error "no arguments provided"
 else
     if [[ "$1" == 'push' ]] ; then
-    	push
+        push
     elif [[ "$1" == 'pull' ]] ; then
-    	pull
+        pull
     else
-    	usage_error "unrecognized command \"$1\""
+        usage_error "unrecognized command \"$1\""
     fi
 fi
