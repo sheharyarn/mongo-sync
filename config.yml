@@ -1,0 +1,19 @@
+# Mongo-Sync Configurations
+
+local:
+  db: 'local_db_name'
+
+remote:
+  db: 'remote_db_name'
+  host:
+    url: 'some.remoteurl.com'
+    port: 27017
+  access:
+  	username: 'mongo_user'
+  	password: 'mongo_pass'
+
+# For now :local only accepts DB name
+# Assumes DB is at localhost:27017
+
+# All of the parameters above are required,
+# without them, the scripts will fail

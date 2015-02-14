@@ -1,0 +1,12 @@
+#!/bin/bash
+
+if [[ $# -eq 0 ]] ; then
+    echo "no arguments provided"
+    echo "usage: mongo-sync push|pull"
+    echo ""
+else
+    for i in "$@"; do
+        find . -iname "*$i*" -d | sed 's/^..//' | grep -i --color "$i"
+        echo ""
+    done
+fi
