@@ -111,19 +111,42 @@ function banner {
     echo -----------
 }
 
+function success_msg {
+    echo "Success\!"
+}
+
+function done_msg {
+    echo "\nDone\!\n"
+}
+
 
 function pull {
     banner
     get_confirmation 'pull'
     load_configs
 
+    echo -n "Dumping Remote DB to $TMPDIR... "
+    mongodump \
+        -h "$remote_host_url":"$remote_host_port" \
+        -d "$remote_db" \
+        -u "$remote_access_username" \
+        -p "$remote_access_password" \
+        -o "$TMPDIR" > /dev/null
+    success_msg
+
+    echo -n "Overwriting Local DB... "
+    mongorestore -d "$local_db" "$TMPDIR"/"$remote_db" --drop > /dev/null
+    success_msg
+
     cleanup
+    done_msg
 }
 
 function push {
     banner
     get_confirmation 'push'
     load_configs
+
 
     cleanup
 }
