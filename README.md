@@ -4,9 +4,7 @@
 > _Sync Remote and Local MongoDB Databases in Bash. Works with Heroku too!_
 
 
-#### But why?
-
-Fuck you. That's why.
+![mongo-sync demo gif](http://i.imgur.com/hg6hwLk.gif)
 
 
 ## Usage
