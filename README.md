@@ -1,5 +1,5 @@
-[mongo-sync](https://github.com/sheharyarn/mongo-sync)
-======================================================
+[mongo-sync](https://sheharyar.me/blog/sync-mongodb-local-and-production-heroku/)
+=================================================================================
 
 > _Sync Remote and Local MongoDB Databases in Bash. Works with Heroku too!_
 
