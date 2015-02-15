@@ -7,7 +7,7 @@
 ![mongo-sync demo gif](http://i.imgur.com/hg6hwLk.gif)
 
 
-## Usage
+# Usage
 
 - Download / Clone the script
 
@@ -22,19 +22,19 @@
 	
 	```bash
 	./mongo-sync push		# Push DB to Remote
-	./mongo-sync pull		# Pull DB from Remote
+	./mongo-sync pull		# Pull DB to Local
 	```
 
 **Note:** *Pushing/Pulling overwrites the target DB*
 
 
-## To Do
+# To Do
 
  - Specify `config.yml` by passing it as an argument
  - More Options for Local DB in `config.yml`
 
 
-## Contributing
+# Contributing
 
 1. [Fork it](https://github.com/sheharyarn/mongo-sync/fork)
 2. Create your feature/fix branch (`git checkout -b feature/my-feature`)
@@ -43,7 +43,7 @@
 5. Create a new Pull Request
 
 
-## License
+# License
 
 (The MIT License)
 
