@@ -28,10 +28,12 @@
 **Note:** *Pushing/Pulling overwrites the target DB*
 
 
-# To Do
+# TODO
 
- - Specify `config.yml` by passing it as an argument
- - More Options for Local DB in `config.yml`
+ - Add a `--config` flag so the user can specify `config.yml` by passing its path 
+ - Add a `--no-overwrite` flag+feature that doesn't drop the target db before restoring it, and *actually* tries to sync it
+ - Add a `-y` flag to skip confirmation
+ - Add more options for Local DB in `config.yml`
 
 
 # Contributing
