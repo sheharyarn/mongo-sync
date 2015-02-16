@@ -3,6 +3,7 @@
 
 > _Sync Remote and Local MongoDB Databases in Bash. Works with Heroku too!_
 
+For all the Rubyists out there, I've also converted this in to a [Ruby Gem](https://github.com/sheharyarn/mongo-sync-ruby) as well.
 
 ![mongo-sync demo gif](http://i.imgur.com/hg6hwLk.gif)
 
