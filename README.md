@@ -8,7 +8,7 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 ![mongo-sync demo gif](http://i.imgur.com/hg6hwLk.gif)
 
 
-# Usage
+## Usage
 
 - Download / Clone the script
 
@@ -26,19 +26,24 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 	./mongo-sync pull		# Pull DB to Local
 	```
 
-**Note:** *Pushing/Pulling overwrites the target DB*
+
+## Notes 
+
+ - `mongo-sync` requires `mongodump` and `mongorestore` binaries to be installed in your system. If you have [`mongodb`](http://docs.mongodb.org/manual/tutorial/#getting-started) installed, then you probably already have them
+ - Pushing/Pulling ***overwrites*** the Target DB
+ - It's a good idea to keep your `config.yml` in `.gitignore` if you're using it inside some other project
 
 
-# TODO
+## TODO
 
  - Add a `--config` flag so the user can specify `config.yml` by passing its path 
  - Add a `--no-overwrite` flag+feature that doesn't drop the target db before restoring it, and *actually* tries to sync it
  - Add a `-y` flag to skip confirmation
- - Add a `backup` command as well
+ - Add a `backup` command and an `--auto-backup` feature
  - Add more options for Local DB in `config.yml`
 
 
-# Contributing
+## Contributing
 
 1. [Fork it](https://github.com/sheharyarn/mongo-sync/fork)
 2. Create your feature/fix branch (`git checkout -b feature/my-feature`)
@@ -47,7 +52,7 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 5. Create a new Pull Request
 
 
-# License
+## License
 
 Copyright (c) 2015 Sheharyar Naseer
 
