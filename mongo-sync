@@ -85,7 +85,11 @@ function get_confirmation() {
 }
 
 function load_configs {
-    local config='config.yml'
+    echo "load_configs"
+    if [ -z "$CONFIG_FILE" ] ; then
+        CONFIG_FILE="config.yml"
+    fi
+    local config=$CONFIG_FILE
     echo "Parsing '$config'..."
 
     DIR=$(get_script_dir)
@@ -173,11 +177,19 @@ function push {
 ## MAIN
 ## ====
 
-# TODO: Add --overwrite and --config flags
+# TODO: Add --overwrite flag
 
 if [[ $# -eq 0 ]] ; then
     usage_error "no arguments provided"
 else
+    if [ "$2" == '--config' ] ; then
+        if [ -e "$3" ] ; then
+            CONFIG_FILE="$3"
+        else
+            usage_error "No config file named \"$3\""
+        fi
+    fi
+
     if [[ "$1" == 'push' ]] ; then
         push
     elif [[ "$1" == 'pull' ]] ; then
