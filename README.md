@@ -22,10 +22,14 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 - Use the script like this:
 	
 	```bash
-	./mongo-sync push		# Push DB to Remote
-	./mongo-sync pull		# Pull DB to Local
+	./mongo-sync push [options]		# Push DB to Remote
+	./mongo-sync pull [options]		# Pull DB to Local
 	```
+- Options
 
+	```
+	--config alternate-config-file.yml
+	```
 
 ## Notes 
 
@@ -36,7 +40,6 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 
 ## TODO
 
- - Add a `--config` flag so the user can specify `config.yml` by passing its path 
  - Add a `--no-overwrite` flag+feature that doesn't drop the target db before restoring it, and *actually* tries to sync it
  - Add a `-y` flag to skip confirmation
  - Add a `backup` command and an `--auto-backup` feature
