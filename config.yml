@@ -2,6 +2,8 @@
 
 local:
   db: 'local_db_name'
+  host:
+  	port: 27017
 
 remote:
   db: 'remote_db_name'
@@ -12,8 +14,8 @@ remote:
     username: 'remote_mongo_user'
     password: 'remote_mongo_pass'
 
-# For now :local only accepts DB name
-# Assumes DB is at localhost:27017
+# For now :local only accepts DB name and port
+# Assumes DB is at localhost:port
 
 # All of the parameters above are required,
 # without them, the script will fail
