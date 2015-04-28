@@ -100,6 +100,7 @@ function load_configs {
 
     # Loads:
     # - $local_db
+    # - $local_host_port
     # - $remote_db
     # - $remote_host_url
     # - $remote_host_port
@@ -140,7 +141,7 @@ function pull {
     success_msg
 
     echo "Overwriting Local DB... "
-    mongorestore -d "$local_db" "$TMPDIR"/"$remote_db" --drop > /dev/null
+    mongorestore -d "$local_db" --port "$local_host_port" "$TMPDIR"/"$remote_db" --drop > /dev/null
     success_msg
 
     cleanup
@@ -153,7 +154,7 @@ function push {
     load_configs
     
     echo "Dumping Local DB to $TMPDIR... "
-    mongodump -d "$local_db" -o "$TMPDIR" > /dev/null
+    mongodump -d "$local_db" --port "$local_host_port" -o "$TMPDIR" > /dev/null
     success_msg
 
     echo "Overwriting Remote DB with Dump... "
