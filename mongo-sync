@@ -167,7 +167,7 @@ function push {
         -d "$remote_db" \
         -u "$remote_access_username" \
         -p "$remote_access_password" \
-        "$TMPDIR"/"$remote_db" --drop > /dev/null
+        "$TMPDIR"/"$local_db" --drop > /dev/null
     success_msg
 
     cleanup
