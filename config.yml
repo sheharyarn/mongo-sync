@@ -3,7 +3,7 @@
 local:
   db: 'local_db_name'
   host:
-  	port: 27017
+    port: 27017
 
 remote:
   db: 'remote_db_name'
