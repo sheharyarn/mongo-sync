@@ -212,6 +212,6 @@ else
     elif [[ "$action" == 'pull' ]] ; then
         pull $skip
     else
-        usage_error "unrecognized command \"$1\""
+        usage_error "unrecognized command \"$action\""
     fi
 fi
