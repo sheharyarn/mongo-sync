@@ -121,18 +121,20 @@ function banner {
 
 function success_msg {
     echo "Success!"
-    echo 
+    echo
 }
 
 function done_msg {
     echo "Done!"
-    echo 
+    echo
 }
 
 
 function pull {
     banner
-    get_confirmation 'pull'
+    if [ "$1" == false ] ; then
+        get_confirmation 'pull'
+    fi
     load_configs
 
     echo "Dumping Remote DB to $TMPDIR... "
@@ -154,9 +156,11 @@ function pull {
 
 function push {
     banner
-    get_confirmation 'push'
+    if [ "$1" == false ] ; then
+        get_confirmation 'push'
+    fi
     load_configs
-    
+
     echo "Dumping Local DB to $TMPDIR... "
     mongodump -d "$local_db" --port "$local_host_port" -o "$TMPDIR" > /dev/null
     success_msg
@@ -183,19 +187,31 @@ function push {
 if [[ $# -eq 0 ]] ; then
     usage_error "no arguments provided"
 else
-    if [ "$2" == '--config' ] ; then
-        if [ -e "$3" ] ; then
-            CONFIG_FILE="$3"
-        else
-            usage_error "No config file named \"$3\""
-        fi
-    fi
+    action="$1"
+    skip=false
+    shift
 
-    if [[ "$1" == 'push' ]] ; then
-        push
-    elif [[ "$1" == 'pull' ]] ; then
-        pull
+    while [ "${1+defined}" ]; do
+        if [ "$1" == '--config' ] ; then
+            shift
+            if [ -e "$1" ] ; then
+                CONFIG_FILE="$1"
+            else
+                usage_error "No config file named \"$1\""
+            fi
+        elif [ "$1" == '-y' ] ; then
+            skip=true
+        else
+            usage_error "unrecognized option \"$1\""
+        fi
+        shift
+    done
+
+    if [[ "$action" == 'push' ]] ; then
+        push $skip
+    elif [[ "$action" == 'pull' ]] ; then
+        pull $skip
     else
-        usage_error "unrecognized command \"$1\""
+        usage_error "unrecognized command \"$action\""
     fi
 fi

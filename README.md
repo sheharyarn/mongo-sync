@@ -28,10 +28,11 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 - Options
 
 	```
+	-y  # Skip confirmation
 	--config alternate-config-file.yml
 	```
 
-## Notes 
+## Notes
 
  - `mongo-sync` requires `mongodump` and `mongorestore` binaries to be installed in your system. If you have [`mongodb`](http://docs.mongodb.org/manual/tutorial/#getting-started) installed, then you probably already have them
  - Pushing/Pulling ***overwrites*** the Target DB
@@ -41,7 +42,6 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 ## TODO
 
  - Add a `--no-overwrite` flag+feature that doesn't drop the target db before restoring it, and *actually* tries to sync it
- - Add a `-y` flag to skip confirmation
  - Add a `backup` command and an `--auto-backup` feature
  - Add more options for Local DB in `config.yml`
 
