@@ -13,6 +13,7 @@ function cleanup {
         rm -rf $TMPDIR
         unset TMPDIR
     fi
+    unset LOCAL_CREDENTIALS
     unset REMOTE_CREDENTIALS
 }
 
@@ -106,11 +107,17 @@ function load_configs {
     # Loads:
     # - $local_db
     # - $local_host_port
+    # - $local_access_username
+    # - $local_access_password
     # - $remote_db
     # - $remote_host_url
     # - $remote_host_port
     # - $remote_access_username
     # - $remote_access_password
+    LOCAL_CREDENTIALS=""
+    if [[ ! -z $local_access_username ]] ; then
+        LOCAL_CREDENTIALS="-u $local_access_username -p $local_access_password"
+    fi
 
     REMOTE_CREDENTIALS=""
     if [[ ! -z $remote_access_username ]] ; then
@@ -155,6 +162,7 @@ function pull {
     mongorestore \
         --port "$local_host_port" \
         -d "$local_db" \
+        $LOCAL_CREDENTIALS \
         "$TMPDIR"/"$remote_db" \
         --drop > /dev/null
     success_msg
@@ -174,6 +182,7 @@ function push {
     mongodump \
         --port "$local_host_port" \
         -d "$local_db" \
+        $LOCAL_CREDENTIALS \
         -o "$TMPDIR" > /dev/null
     success_msg
 
