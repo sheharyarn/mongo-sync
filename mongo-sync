@@ -13,6 +13,8 @@ function cleanup {
         rm -rf $TMPDIR
         unset TMPDIR
     fi
+    unset TUNNEL_PORT
+    unset TUNNEL_CREDENTIALS
     unset LOCAL_CREDENTIALS
     unset REMOTE_CREDENTIALS
 }
@@ -114,6 +116,10 @@ function load_configs {
     # - $remote_host_port
     # - $remote_access_username
     # - $remote_access_password
+    # - $tunnel_on
+    # - $tunnel_access_username
+    # - $tunnel_access_port
+
     LOCAL_CREDENTIALS=""
     if [[ ! -z $local_access_username ]] ; then
         LOCAL_CREDENTIALS="-u $local_access_username -p $local_access_password"
@@ -123,6 +129,9 @@ function load_configs {
     if [[ ! -z $remote_access_username ]] ; then
         REMOTE_CREDENTIALS="-u $remote_access_username -p $remote_access_password"
     fi
+
+    TUNNEL_CREDENTIALS="$tunnel_access_username@$remote_host_url"
+    TUNNEL_PORT=27018
 
     TMPDIR=/tmp/"$local_db"/dump
 }
@@ -142,6 +151,16 @@ function done_msg {
     echo
 }
 
+function open_tunnel {
+    echo "Connecting through SSH tunnel..."
+    ssh -fqTNM -S db-sync-socket -L $TUNNEL_PORT:127.0.0.1:$remote_host_port $TUNNEL_CREDENTIALS -p $tunnel_access_port
+}
+
+function close_tunnel {
+    echo "Disconnecting from SSH tunnel..."
+    ssh -S db-sync-socket -O exit $TUNNEL_CREDENTIALS 2> /dev/null
+}
+
 
 function pull {
     banner
@@ -149,6 +168,12 @@ function pull {
         get_confirmation 'pull'
     fi
     load_configs
+
+    if [ "$tunnel_on" == true ] ; then
+        open_tunnel
+        remote_host_url="localhost"
+        remote_host_port=$TUNNEL_PORT
+    fi
 
     echo "Dumping Remote DB to $TMPDIR... "
     mongodump \
@@ -167,6 +192,10 @@ function pull {
         --drop > /dev/null
     success_msg
 
+    if [ "$tunnel_on" == true ] ; then
+        close_tunnel
+    fi
+
     cleanup
     done_msg
 }
@@ -177,6 +206,12 @@ function push {
         get_confirmation 'push'
     fi
     load_configs
+
+    if [ "$tunnel_on" == true ] ; then
+        open_tunnel
+        remote_host_url="localhost"
+        remote_host_port=$TUNNEL_PORT
+    fi
 
     echo "Dumping Local DB to $TMPDIR... "
     mongodump \
@@ -193,6 +228,10 @@ function push {
         $REMOTE_CREDENTIALS \
         "$TMPDIR"/"$local_db" --drop > /dev/null
     success_msg
+
+    if [ "$tunnel_on" == true ] ; then
+        close_tunnel
+    fi
 
     cleanup
     done_msg
