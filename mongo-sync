@@ -13,6 +13,7 @@ function cleanup {
         rm -rf $TMPDIR
         unset TMPDIR
     fi
+    unset REMOTE_CREDENTIALS
 }
 
 function error {
@@ -111,6 +112,11 @@ function load_configs {
     # - $remote_access_username
     # - $remote_access_password
 
+    REMOTE_CREDENTIALS=""
+    if [[ ! -z $remote_access_username ]] ; then
+        REMOTE_CREDENTIALS="-u $remote_access_username -p $remote_access_password"
+    fi
+
     TMPDIR=/tmp/"$local_db"/dump
 }
 
@@ -141,13 +147,16 @@ function pull {
     mongodump \
         -h "$remote_host_url":"$remote_host_port" \
         -d "$remote_db" \
-        -u "$remote_access_username" \
-        -p "$remote_access_password" \
+        $REMOTE_CREDENTIALS \
         -o "$TMPDIR" > /dev/null
     success_msg
 
-    echo "Overwriting Local DB... "
-    mongorestore -d "$local_db" --port "$local_host_port" "$TMPDIR"/"$remote_db" --drop > /dev/null
+    echo "Overwriting Local DB with Dump... "
+    mongorestore \
+        --port "$local_host_port" \
+        -d "$local_db" \
+        "$TMPDIR"/"$remote_db" \
+        --drop > /dev/null
     success_msg
 
     cleanup
@@ -162,15 +171,17 @@ function push {
     load_configs
 
     echo "Dumping Local DB to $TMPDIR... "
-    mongodump -d "$local_db" --port "$local_host_port" -o "$TMPDIR" > /dev/null
+    mongodump \
+        --port "$local_host_port" \
+        -d "$local_db" \
+        -o "$TMPDIR" > /dev/null
     success_msg
 
     echo "Overwriting Remote DB with Dump... "
     mongorestore \
         -h "$remote_host_url":"$remote_host_port" \
         -d "$remote_db" \
-        -u "$remote_access_username" \
-        -p "$remote_access_password" \
+        $REMOTE_CREDENTIALS \
         "$TMPDIR"/"$local_db" --drop > /dev/null
     success_msg
 
