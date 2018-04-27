@@ -7,7 +7,7 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 
 ![mongo-sync demo gif](http://i.imgur.com/hg6hwLk.gif)
 
-## Additional Features (comparing to the forked repo)
+## Additional Features (addition to the oringnal repo)
 - Support `authenticationDatabase` option
 
 ## Usage
