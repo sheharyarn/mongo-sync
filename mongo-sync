@@ -111,11 +111,13 @@ function load_configs {
     # - $local_host_port
     # - $local_access_username
     # - $local_access_password
+    # - $local_access_authenticationDatabase
     # - $remote_db
     # - $remote_host_url
     # - $remote_host_port
     # - $remote_access_username
     # - $remote_access_password
+    # - $remote_access_authenticationDatabase
     # - $tunnel_on
     # - $tunnel_access_username
     # - $tunnel_access_port
@@ -125,9 +127,17 @@ function load_configs {
         LOCAL_CREDENTIALS="-u $local_access_username -p $local_access_password"
     fi
 
+    if [[ ! -z $local_access_authenticationDatabase ]] ; then
+        LOCAL_CREDENTIALS="$LOCAL_CREDENTIALS --authenticationDatabase $local_access_authenticationDatabase"
+    fi
+
     REMOTE_CREDENTIALS=""
     if [[ ! -z $remote_access_username ]] ; then
         REMOTE_CREDENTIALS="-u $remote_access_username -p $remote_access_password"
+    fi
+
+    if [[ ! -z $remote_access_authenticationDatabase ]] ; then
+        REMOTE_CREDENTIALS="$REMOTE_CREDENTIALS --authenticationDatabase $remote_access_authenticationDatabase"
     fi
 
     TUNNEL_CREDENTIALS="$tunnel_access_username@$remote_host_url"

@@ -7,13 +7,15 @@ For all the Rubyists out there, I've converted this in to a [Ruby Gem](https://g
 
 ![mongo-sync demo gif](http://i.imgur.com/hg6hwLk.gif)
 
+## Additional Features (addition to the oringnal repo)
+- Support `authenticationDatabase` option
 
 ## Usage
 
 - Download / Clone the script
 
     ```bash
-    git clone https://github.com/sheharyarn/mongo-sync.git
+    git clone https://github.com/j0e1in/mongo-sync.git
     cd mongo-sync
     ```
 
