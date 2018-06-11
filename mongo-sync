@@ -185,20 +185,48 @@ function pull {
     fi
 
     echo "Dumping Remote DB to $TMPDIR... "
-    mongodump \
-        -h "$remote_host_url":"$remote_host_port" \
-        -d "$remote_db" \
-        $REMOTE_CREDENTIALS \
-        -o "$TMPDIR" > /dev/null
+
+    if [ "$remote_collections" ] ; then
+        for i in "${remote_collections[@]}"
+        do
+            mongodump \
+                -h "$remote_host_url":"$remote_host_port" \
+                -d "$remote_db" \
+                -c "$i" \
+                $REMOTE_CREDENTIALS \
+                -o "$TMPDIR/$i" > /dev/null
+        done
+    else
+        mongodump \
+            -h "$remote_host_url":"$remote_host_port" \
+            -d "$remote_db" \
+            $REMOTE_CREDENTIALS \
+            -o "$TMPDIR" > /dev/null
+    fi
+
     success_msg
 
     echo "Overwriting Local DB with Dump... "
-    mongorestore \
-        --port "$local_host_port" \
-        -d "$local_db" \
-        $LOCAL_CREDENTIALS \
-        "$TMPDIR"/"$remote_db" \
-        --drop > /dev/null
+
+    if [ "$remote_collections" ] ; then
+        for i in "${remote_collections[@]}"
+        do
+            mongorestore \
+                --port "$local_host_port" \
+                -d "$local_db" \
+                $LOCAL_CREDENTIALS \
+                "$TMPDIR"/"$i"/"$remote_db" \
+                --drop > /dev/null
+        done
+    else
+        mongorestore \
+            --port "$local_host_port" \
+            -d "$local_db" \
+            $LOCAL_CREDENTIALS \
+            "$TMPDIR"/"$remote_db" \
+            --drop > /dev/null
+    fi
+
     success_msg
 
     if [ "$tunnel_on" == true ] ; then
