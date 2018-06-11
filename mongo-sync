@@ -111,14 +111,23 @@ function load_configs {
     # - $local_host_port
     # - $local_access_username
     # - $local_access_password
+    # - $local_collections
     # - $remote_db
     # - $remote_host_url
     # - $remote_host_port
     # - $remote_access_username
     # - $remote_access_password
+    # - $remote_collections
     # - $tunnel_on
     # - $tunnel_access_username
     # - $tunnel_access_port
+
+    if [ "$local_collections" ] ; then
+        local_collections=($local_collections)
+    fi
+    if [ "$remote_collections" ] ; then
+        remote_collections=($remote_collections)
+    fi
 
     LOCAL_CREDENTIALS=""
     if [[ ! -z $local_access_username ]] ; then
@@ -214,19 +223,46 @@ function push {
     fi
 
     echo "Dumping Local DB to $TMPDIR... "
-    mongodump \
-        --port "$local_host_port" \
-        -d "$local_db" \
-        $LOCAL_CREDENTIALS \
-        -o "$TMPDIR" > /dev/null
+
+    if [ "$local_collections" ] ; then
+        for i in "${local_collections[@]}"
+        do
+            mongodump \
+                --port "$local_host_port" \
+                -d "$local_db" \
+                -c "$i" \
+                $LOCAL_CREDENTIALS \
+                -o "$TMPDIR/$i" > /dev/null
+        done
+    else
+        mongodump \
+            --port "$local_host_port" \
+            -d "$local_db" \
+            $LOCAL_CREDENTIALS \
+            -o "$TMPDIR" > /dev/null
+    fi
+
     success_msg
 
     echo "Overwriting Remote DB with Dump... "
-    mongorestore \
-        -h "$remote_host_url":"$remote_host_port" \
-        -d "$remote_db" \
-        $REMOTE_CREDENTIALS \
-        "$TMPDIR"/"$local_db" --drop > /dev/null
+
+    if [ "$local_collections" ] ; then
+        for i in "${local_collections[@]}"
+        do
+            mongorestore \
+                -h "$remote_host_url":"$remote_host_port" \
+                -d "$remote_db" \
+                $REMOTE_CREDENTIALS \
+                "$TMPDIR"/"$i"/"$local_db" --drop > /dev/null
+        done
+    else
+        mongorestore \
+            -h "$remote_host_url":"$remote_host_port" \
+            -d "$remote_db" \
+            $REMOTE_CREDENTIALS \
+            "$TMPDIR"/"$local_db" --drop > /dev/null
+    fi
+
     success_msg
 
     if [ "$tunnel_on" == true ] ; then
