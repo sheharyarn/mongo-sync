@@ -218,15 +218,40 @@ function push {
         --port "$local_host_port" \
         -d "$local_db" \
         $LOCAL_CREDENTIALS \
-        -o "$TMPDIR" > /dev/null
+        -o "$TMPDIR" 2> /dev/null
     success_msg
 
     echo "Overwriting Remote DB with Dump... "
-    mongorestore \
-        -h "$remote_host_url":"$remote_host_port" \
-        -d "$remote_db" \
-        $REMOTE_CREDENTIALS \
-        "$TMPDIR"/"$local_db" --drop > /dev/null
+
+    if [ "$2" == false ] ; then
+        mongorestore \
+            -h "$remote_host_url":"$remote_host_port" \
+            -d "$remote_db" \
+            $REMOTE_CREDENTIALS \
+            "$TMPDIR"/"$local_db" --drop 2> /dev/null
+    else
+        for collection_file in "$TMPDIR"/"$local_db"/*.bson ; do
+            local TS=$(date +%s)
+            
+            local collection=${collection_file##*/}
+            collection=${collection%.bson}
+            
+            local tmp_collection=${collection}_${TS}
+
+            mongorestore \
+                -h "$remote_host_url":"$remote_host_port" \
+                -d "$remote_db" \
+                -c "$tmp_collection" \
+                $REMOTE_CREDENTIALS \
+                "$collection_file" 2> /dev/null
+            
+            mongo --eval "
+                let remoteDb = db.getSiblingDB('$remote_db');
+                remoteDb.$collection.drop();
+                remoteDb.$tmp_collection.renameCollection('$collection');
+            " > /dev/null
+        done
+    fi
     success_msg
 
     if [ "$tunnel_on" == true ] ; then
@@ -248,6 +273,7 @@ if [[ $# -eq 0 ]] ; then
 else
     action="$1"
     skip=false
+    hot=false
     shift
 
     while [ "${1+defined}" ]; do
@@ -260,6 +286,12 @@ else
             fi
         elif [ "$1" == '-y' ] ; then
             skip=true
+        elif [ "$1" == '--hot' ] ; then
+            if [ "$action" == 'push' ] ; then
+                hot=true
+            elif [ "$action" == 'pull' ] ; then
+                usage_error "option \"$1\" has not effect with 'pull' action"
+            fi
         else
             usage_error "unrecognized option \"$1\""
         fi
@@ -267,7 +299,7 @@ else
     done
 
     if [[ "$action" == 'push' ]] ; then
-        push $skip
+        push $skip $hot
     elif [[ "$action" == 'pull' ]] ; then
         pull $skip
     else
