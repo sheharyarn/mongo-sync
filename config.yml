@@ -10,12 +10,7 @@ local:
 
 remote:
   db: 'remote_db_name'
-  host:
-    url: 'some.remoteurl.com'
-    port: 27017
-  access:
-    username: 'remote_mongo_user'
-    password: 'remote_mongo_pass'
+  uri: 'remote_uri'
 
 tunnel:
   on: false

@@ -177,9 +177,7 @@ function pull {
 
     echo "Dumping Remote DB to $TMPDIR... "
     mongodump \
-        -h "$remote_host_url":"$remote_host_port" \
-        -d "$remote_db" \
-        $REMOTE_CREDENTIALS \
+        --uri "$remote_uri" \
         -o "$TMPDIR" > /dev/null
     success_msg
 
@@ -223,9 +221,8 @@ function push {
 
     echo "Overwriting Remote DB with Dump... "
     mongorestore \
-        -h "$remote_host_url":"$remote_host_port" \
-        -d "$remote_db" \
-        $REMOTE_CREDENTIALS \
+        --uri "$remote_uri" \
+        --db "$remote_db" \
         "$TMPDIR"/"$local_db" --drop > /dev/null
     success_msg
 
